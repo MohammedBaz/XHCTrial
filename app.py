@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import re
 from model import get_openai_response
 
 # Load the healthcare dataset
@@ -28,38 +29,63 @@ if user_input := st.chat_input("Ask a question about the healthcare data:"):
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # Check if the user query is data-related
-    if "doctor" in user_input.lower():
-        # Query the number of doctors across all facilities
-        doctor_count = data["Doctors"].sum()
-        assistant_response = f"The total number of doctors across all facilities is {doctor_count}."
-    elif "nurse" in user_input.lower():
-        # Query the number of nurses across all facilities
-        nurse_count = data["Nurses"].sum()
-        assistant_response = f"The total number of nurses across all facilities is {nurse_count}."
-    elif "satisfaction" in user_input.lower():
+    # Function to identify the intent based on keywords
+    def identify_intent(query):
+        if re.search(r'\b(hospital|clinic|polyclinic)\b', query, re.IGNORECASE):
+            return "facility_names"
+        elif re.search(r'\b(doctors|nurses)\b', query, re.IGNORECASE):
+            return "staff_count"
+        elif re.search(r'\b(satisfaction|patient satisfaction)\b', query, re.IGNORECASE):
+            return "avg_satisfaction"
+        elif re.search(r'\b(waiting time)\b', query, re.IGNORECASE):
+            return "avg_waiting_time"
+        elif re.search(r'\b(beds|occupancy)\b', query, re.IGNORECASE):
+            return "total_beds"
+        else:
+            return "openai_query"
+
+    # Determine the intent based on user input
+    intent = identify_intent(user_input)
+
+    # Handle different intents
+    if intent == "facility_names":
+        # Query for the names of all facilities
+        facility_names = data["Facility Name"].tolist()
+        assistant_response = f"The facilities are: {', '.join(facility_names)}."
+
+    elif intent == "staff_count":
+        # Query the total number of doctors or nurses
+        if "doctor" in user_input.lower():
+            doctor_count = data["Doctors"].sum()
+            assistant_response = f"The total number of doctors across all facilities is {doctor_count}."
+        elif "nurse" in user_input.lower():
+            nurse_count = data["Nurses"].sum()
+            assistant_response = f"The total number of nurses across all facilities is {nurse_count}."
+        else:
+            assistant_response = "Please specify whether you're asking for the number of doctors or nurses."
+
+    elif intent == "avg_satisfaction":
         # Query the average patient satisfaction
         avg_satisfaction = data["PatientSatisfaction"].mean()
-        assistant_response = f"The average patient satisfaction is {avg_satisfaction:.2f}."
-    elif "waiting time" in user_input.lower():
+        assistant_response = f"The average patient satisfaction across all facilities is {avg_satisfaction:.2f}."
+
+    elif intent == "avg_waiting_time":
         # Query the average waiting time
         avg_waiting_time = data["WaitingTime"].mean()
         assistant_response = f"The average waiting time across all facilities is {avg_waiting_time:.2f}."
-    elif "beds" in user_input.lower():
+
+    elif intent == "total_beds":
         # Query the total number of beds
         total_beds = data["Beds"].sum()
         assistant_response = f"The total number of beds across all facilities is {total_beds}."
-    elif "facility type" in user_input.lower():
-        # Query the unique types of facilities
-        facility_types = data["Type"].unique()
-        assistant_response = f"The types of facilities are: {', '.join(facility_types)}."
+
     else:
-        # For other queries, use OpenAI to get an answer
+        # For complex or general queries, use OpenAI to get an answer
         assistant_message = get_openai_response(st.session_state.messages)
         if assistant_message:
             assistant_response = assistant_message.content
         else:
-            assistant_response = "Failed to fetch response from OpenAI."
+            assistant_response = "Sorry, I could not understand your question."
 
     # Append assistant's response to session state and display it
     st.session_state.messages.append({"role": "assistant", "content": assistant_response})
