@@ -19,14 +19,14 @@ def get_openai_answer(question, data):
     context = f"Here is the healthcare data:\n\n{data}\n\nAnswer the question: {question}"
     
     try:
-        # Use ChatCompletion with the correct method for GPT models
-        response = openai.ChatCompletion.create(
+        # Use the completions endpoint with the new method
+        response = openai.Completion.create(
             model="gpt-4",  # Use the correct model, e.g., "gpt-4" or another version
-            messages=[{"role": "user", "content": context}],
+            prompt=context,
             max_tokens=150,
             temperature=0.7
         )
-        return response['choices'][0]['message']['content'].strip()
+        return response.choices[0].text.strip()
     
     except Exception as e:  # General exception handling
         st.error(f"Error: {str(e)}")  # Log the error message for troubleshooting
