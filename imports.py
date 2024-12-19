@@ -18,3 +18,4 @@ df = pd.read_csv("healthcare_data.csv")
 
 # Import from the correct location
 from model import get_gemini_response
+from utils.database import get_data_from_df 
