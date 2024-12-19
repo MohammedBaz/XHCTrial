@@ -12,7 +12,7 @@ genai.configure(api_key=API_KEY)
 MODEL_NAME = "gemini-pro"
 
 # Load the DataFrame
-df = pd.read_csv("data/healthcare_data.csv")
+df = pd.read_csv("healthcare_data.csv")
 
 # Import from the correct location
 from model import get_gemini_response
