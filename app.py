@@ -1,6 +1,6 @@
+import openai
 import streamlit as st
 import pandas as pd
-import openai
 
 # Load the CSV file
 df = pd.read_csv("healthcare_data.csv")
@@ -28,7 +28,11 @@ def get_openai_answer(question, data):
         )
         return response['choices'][0]['message']['content'].strip()
     except openai.error.OpenAIError as e:
+        st.error(f"OpenAI API error: {e}")  # Log the error message for troubleshooting
         return f"Error: {e}"
+    except Exception as e:  # General exception handling
+        st.error(f"Unexpected error: {e}")
+        return f"Unexpected error: {e}"
 
 # Displaying the answer when a user submits a question
 if user_question:
