@@ -10,7 +10,7 @@ def load_data():
 
 data = load_data()
 
-# Filter the data based on the "District" column (assumes the data contains district info)
+# Filter the data based on the "District" column (for Taif only)
 taif_data = data[data["District"] == "Taif"]
 
 # Streamlit app layout
@@ -53,8 +53,9 @@ if user_input := st.chat_input("Ask a question about the healthcare data:"):
     # Handle different intents
     if intent == "facility_names":
         # Query for the names of all facilities in Taif
-        facility_names = taif_data["Facility Name"].tolist()
-        assistant_response = f"The facilities in Taif are: {', '.join(facility_names)}."
+        hospital_data = taif_data[taif_data['Type'] == 'Hospital']
+        facility_names = hospital_data["Facility Name"].tolist()
+        assistant_response = f"The hospitals in Taif are: {', '.join(facility_names)}."
 
     elif intent == "staff_count":
         # Query the total number of doctors or nurses in Taif
