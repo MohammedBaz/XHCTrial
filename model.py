@@ -15,22 +15,14 @@ prompt = [
     Instructions:
     - If the user asks a question that can be answered using the data in the DataFrame, you MUST analyze the data and provide the answer based on the information in the DataFrame.
     - Do not guess or make up answers. Only provide answers that are directly supported by the data in the DataFrame.
-    
 
     Please provide the answer to the question as your output.
     """
 ]
 
-#def get_gemini_response(question, prompt, df):
-#    model = genai.GenerativeModel(imports.MODEL_NAME)
-
- #   # Use Gemini to interpret the question and generate the response
- #   response = model.generate_content([prompt[0], question, str(df)])  # Include the DataFrame in the context
- #   return response.text
-
-# model.py
-
-# ... (rest of your model.py code) ...
+def extract_answer(response_text):
+    # Assuming the answer is the last line of the response
+    return response_text.strip().split("\n")[-1]
 
 def get_gemini_response(question, prompt, df):
     model = genai.GenerativeModel(imports.MODEL_NAME)
@@ -39,7 +31,7 @@ def get_gemini_response(question, prompt, df):
     response = model.generate_content([prompt[0], question, str(df)])
 
     # Extract the answer from the response
-    answer = extract_answer(response.text)  # You'll need to implement this function
+    answer = extract_answer(response.text)
 
     # If the answer is a number, try to make it more conversational
     if answer.isdigit():
