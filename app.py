@@ -20,21 +20,14 @@ if user_input := st.chat_input("Ask me something:"):
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # Generate assistant's response
-    with st.chat_message("assistant"):
-        response_container = st.empty()  # Placeholder for dynamic updates
-        full_response = ""
+    # Fetch the response from OpenAI
+    response = get_openai_response(st.session_state.messages, stream=False)
+    if response:  # Check if a response is received
+        assistant_response = response.get("choices")[0].get("message").get("content")
+        st.session_state.messages.append({"role": "assistant", "content": assistant_response})
 
-        # Fetch the response from the OpenAI model as a stream
-        response_stream = get_openai_response(st.session_state.messages)
-        if response_stream:  # Check if the response stream is valid
-            for chunk in response_stream:
-                if hasattr(chunk.choices[0].delta, "content"):  # Safely check attribute
-                    content = chunk.choices[0].delta.content
-                    full_response += content
-                    response_container.markdown(full_response)  # Update dynamically
-        else:
-            st.error("Failed to fetch response from the OpenAI API.")
-
-        # Save the assistant's response to session state
-        st.session_state.messages.append({"role": "assistant", "content": full_response})
+        # Display the assistant's response
+        with st.chat_message("assistant"):
+            st.markdown(assistant_response)
+    else:
+        st.error("Failed to fetch response from OpenAI.")
