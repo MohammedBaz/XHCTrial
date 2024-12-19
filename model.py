@@ -13,9 +13,9 @@ prompt = [
     Facility Name, District, Type, Beds, Speciality, Doctors, Nurses, Outpatients, Inpatients, WaitingTime, OccupancyRate, PatientSatisfaction.
 
     Instructions:
-    - If the user greets you or asks a general question, respond in a friendly and professional manner.
-    - If the user asks a specific question about Taif medical institutions that can be answered using the data in the DataFrame, analyze the data and provide the answer.
-    - If the user asks a question unrelated to Taif medical institutions or that cannot be answered using the data, say "This question cannot be answered using the Taif medical institutions data."
+    - If the user asks a question that can be answered using the data in the DataFrame, you MUST analyze the data and provide the answer based on the information in the DataFrame.
+    - Do not guess or make up answers. Only provide answers that are directly supported by the data in the DataFrame.
+    
 
     Please provide the answer to the question as your output.
     """
