@@ -1,5 +1,5 @@
 from imports import *
-
+from model import prompt
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -11,7 +11,7 @@ if prompt := st.chat_input(""):
 
     try:
         # Generate response using the model
-        response = get_gemini_response(prompt, model.prompt, df)
+        response = get_gemini_response(prompt, prompt, df) 
 
         # Check if the response is a function call
         if response.startswith("get_data_from_df("):
