@@ -33,17 +33,18 @@ if prompt := st.chat_input():
     
     # Request a completion from OpenAI's GPT-3.5 or GPT-4
     try:
-        response = openai.Completion.create(
+        response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",  # Or use another model, e.g., "gpt-4"
-            prompt=[msg["content"] for msg in st.session_state.messages],
+            messages=st.session_state.messages,
             max_tokens=150,
             temperature=0.7
         )
         
         # Get the response message
-        msg = response.choices[0].text.strip()
+        msg = response['choices'][0]['message']['content']
         st.session_state.messages.append({"role": "assistant", "content": msg})
         st.chat_message("assistant").write(msg)
 
-    except openai.error.OpenAIError as e:
+    except Exception as e:
+        # Handle general exceptions, which can capture API errors or others
         st.error(f"Error: {str(e)}")
