@@ -2,11 +2,11 @@ import openai
 import streamlit as st
 import pandas as pd
 
-# Load the CSV file
+# Load the CSV file (make sure this file is accessible in your Streamlit Cloud project)
 df = pd.read_csv("healthcare_data.csv")
 
-# Set your OpenAI API key
-openai.api_key = st.secrets["OpenAIKey"]
+# Set your OpenAI API key from Streamlit secrets
+openai.api_key = st.secrets["OpenAIKey"]["api_key"]
 
 # Streamlit app title
 st.title("Healthcare Facility Data Query")
@@ -21,7 +21,7 @@ def get_openai_answer(question, data):
     # Use ChatCompletion with correct method for GPT models
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",  # Use the correct model
+            model="gpt-4",  # Use the correct model, e.g., "gpt-4" or another version
             messages=[{"role": "user", "content": context}],
             max_tokens=150,
             temperature=0.7
