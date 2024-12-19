@@ -11,10 +11,6 @@ openai.api_key = st.secrets["OpenAIKey"]
 # Streamlit app title
 st.title("Healthcare Facility Data Query")
 
-# Display the dataset (optional, for user reference)
-st.subheader("Healthcare Data")
-st.write(df)
-
 # User input for the question
 user_question = st.text_input("Ask a question about the healthcare data:")
 
@@ -22,23 +18,17 @@ user_question = st.text_input("Ask a question about the healthcare data:")
 def get_openai_answer(question, data):
     context = f"Here is the healthcare data:\n\n{data}\n\nAnswer the question: {question}"
     
-    # Call the OpenAI API for the response
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",  # You can use gpt-4 if available
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": context},
-            {"role": "user", "content": question}
-        ],
+    response = openai.Completion.create(
+        model="gpt-3.5-turbo",  # or gpt-4 if available
+        prompt=context,
         max_tokens=150,
         temperature=0.7
     )
-    
-    return response['choices'][0]['message']['content'].strip()
+    return response['choices'][0]['text'].strip()
 
 # Displaying the answer when a user submits a question
 if user_question:
-    # Convert dataframe to string for context (or use a smaller sample if too large)
+    # Convert dataframe to string
     data_str = df.to_string(index=False)
     
     # Get the response from OpenAI
