@@ -1,7 +1,6 @@
 # app.py
 
 from imports import *
-import model
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -14,10 +13,20 @@ if prompt := st.chat_input(""):
 
     try:
         # Generate response using the model
-        response = get_gemini_response(prompt, model.prompt, df)  # Pass the DataFrame to the function
+        response = get_gemini_response(prompt, model.prompt, df)
 
-        # Add assistant message to chat history (answer only)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        # Check if the response is a function call
+        if response.startswith("get_data_from_df("):
+            # Extract the question from the function call
+            question_to_answer = response[len("get_data_from_df("):-1]
+            
+            # Get the answer from the DataFrame
+            answer = get_data_from_df(question_to_answer, df)  # Pass the DataFrame to the function
+            
+            st.session_state.messages.append({"role": "assistant", "content": answer})
+        else:
+            # Add assistant message to chat history (answer only)
+            st.session_state.messages.append({"role": "assistant", "content": response})
 
     except Exception as e:
         st.session_state.messages.append({"role": "assistant", "content": f"Error: {e}"})
