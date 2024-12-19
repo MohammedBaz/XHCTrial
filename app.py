@@ -18,13 +18,17 @@ user_question = st.text_input("Ask a question about the healthcare data:")
 def get_openai_answer(question, data):
     context = f"Here is the healthcare data:\n\n{data}\n\nAnswer the question: {question}"
     
-    response = openai.Completion.create(
-        engine="text-davinci-003",  # Or whichever model you are using
-        prompt=context,
+    response = openai.chat.Completion.create(
+        model="gpt-3.5-turbo",  # Use the chat model (or gpt-4 if available)
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": context},
+            {"role": "user", "content": question}
+        ],
         max_tokens=150,
         temperature=0.7
     )
-    return response.choices[0].text.strip()
+    return response['choices'][0]['message']['content'].strip()
 
 # Displaying the answer when a user submits a question
 if user_question:
