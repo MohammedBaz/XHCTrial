@@ -21,13 +21,12 @@ if user_input := st.chat_input("Ask me something:"):
         st.markdown(user_input)
 
     # Fetch the response from OpenAI
-    response = get_openai_response(st.session_state.messages)
-    if response:  # Check if a response is received
-        assistant_response = response.get("choices")[0].get("message").get("content")
-        st.session_state.messages.append({"role": "assistant", "content": assistant_response})
+    assistant_message = get_openai_response(st.session_state.messages)
+    if assistant_message:  # Check if a response is received
+        st.session_state.messages.append({"role": "assistant", "content": assistant_message["content"]})
 
         # Display the assistant's response
         with st.chat_message("assistant"):
-            st.markdown(assistant_response)
+            st.markdown(assistant_message["content"])
     else:
         st.error("Failed to fetch response from OpenAI.")
