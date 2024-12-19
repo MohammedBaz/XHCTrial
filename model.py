@@ -3,7 +3,7 @@ from openai import OpenAI
 import streamlit as st
 
 # Initialize the OpenAI client with API key from secrets
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"]["api_key"])
+client = OpenAI(api_key=st.secrets["OpenAIKey"]["api_key"])
 
 # Function to generate model response based on messages
 def get_openai_response(messages, model="gpt-3.5-turbo"):
