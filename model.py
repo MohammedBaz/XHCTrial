@@ -1,4 +1,3 @@
-#model.py
 from openai import OpenAI
 import streamlit as st
 
@@ -14,7 +13,7 @@ def get_openai_response(messages, model="gpt-4o-mini"):
             store=True,
             messages=messages
         )
-        return completion.choices[0].message  # Returning the assistant's message
+        return completion.choices[0].message  # Returning the assistant's message object
     except Exception as e:
         st.error(f"Error with OpenAI API: {e}")
         return None
