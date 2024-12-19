@@ -1,8 +1,6 @@
-# model.py
-
 import google.generativeai as genai
 import pandas as pd
-import imports  # Import the imports module
+import imports  
 
 # Define Your Prompt
 prompt = [
@@ -48,8 +46,8 @@ def get_gemini_response(question, prompt, df):
                 district_info = ", ".join([f"{count} in {district}" for district, count in district_counts.items()])
                 
                 # Formulate the conversational response
-                answer = f"There are {answer_int} hospitals in Taif. {district_info}."
-                answer += " Do you like to get Beds number or waiting time?"
+                answer = f"There are {answer_int} hospitals in Taif. {district_info}." 
+                answer += " Do you like to get Beds number or waiting time?" 
 
             # Add more conditions for other types of questions if needed
 
