@@ -1,12 +1,17 @@
 import streamlit as st
 import pandas as pd
 import openai
+openai.api_key = st.secrets["OpenAIKey"]
+
+import streamlit as st
+import pandas as pd
+import openai
 
 # Load the CSV file
 df = pd.read_csv("healthcare_data.csv")
 
-# Set your OpenAI API key
-openai.api_key = st.secrets["OpenAIKey"]
+# Set your OpenAI API key from Streamlit secrets
+
 
 # Streamlit app title
 st.title("Healthcare Facility Data Query")
@@ -32,7 +37,7 @@ def get_openai_answer(question, data):
 
 # Displaying the answer when a user submits a question
 if user_question:
-    # Convert dataframe to string
+    # Convert dataframe to string (excluding index column)
     data_str = df.to_string(index=False)
     
     # Get the response from OpenAI
