@@ -3,7 +3,7 @@ import openai
 
 # Set your API key
 openai.api_key = st.secrets["OpenAIKey"]["api_key"]  # Replace with your OpenAI API key
-
+st.write(openai.api_key)
 # Streamlit app layout
 st.title("OpenAI Chat with GPT")
 
