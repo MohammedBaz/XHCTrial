@@ -1,5 +1,3 @@
-# app.py
-
 from imports import *
 
 # Initialize chat history
