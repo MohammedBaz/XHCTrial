@@ -20,7 +20,7 @@ def get_openai_answer(question, data):
     
     # Use the updated API method for the new version
     response = openai.completions.create(
-        model="gpt-4o-mini-2024-07-18",  # or gpt-4 if available
+        model="gpt-4o",  # or gpt-4 if available
         prompt=context,
         max_tokens=150,
         temperature=0.7
