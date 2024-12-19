@@ -29,8 +29,8 @@ if user_input := st.chat_input("Ask me something:"):
         response_stream = get_openai_response(st.session_state.messages)
         if response_stream:  # Check if the response stream is valid
             for chunk in response_stream:
-                if chunk.choices and chunk.choices[0].delta:
-                    content = chunk.choices[0].delta.get("content", "")
+                if hasattr(chunk.choices[0].delta, "content"):  # Safely check attribute
+                    content = chunk.choices[0].delta.content
                     full_response += content
                     response_container.markdown(full_response)  # Update dynamically
         else:
