@@ -19,7 +19,7 @@ def get_openai_answer(question, data):
     context = f"Here is the healthcare data:\n\n{data}\n\nAnswer the question: {question}"
     
     # Use the updated API method for chat-based models
-    response = openai.chat_completions.create(
+    response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",  # or gpt-4 if available
         messages=[
             {"role": "system", "content": "You are a helpful assistant."},
