@@ -1,44 +1,49 @@
-import openai
 import streamlit as st
-import pandas as pd
+import openai
 
-# Load the CSV file (make sure this file is accessible in your Streamlit Cloud project)
-df = pd.read_csv("healthcare_data.csv")
+# Get the OpenAI API Key from Streamlit's sidebar
+with st.sidebar:
+    openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
+    st.markdown("[Get an OpenAI API key](https://platform.openai.com/account/api-keys)")
+    st.markdown("[View the source code](https://github.com/streamlit/llm-examples/blob/main/Chatbot.py)")
 
-# Set your OpenAI API key from Streamlit secrets
-openai.api_key = st.secrets["OpenAIKey"]["api_key"]
+# Title of the Streamlit app
+st.title("💬 Chatbot")
 
-# Streamlit app title
-st.title("Healthcare Facility Data Query")
+# Initialize session state if not already done
+if "messages" not in st.session_state:
+    st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
 
-# User input for the question
-user_question = st.text_input("Ask a question about the healthcare data:")
+# Display the chat messages
+for msg in st.session_state.messages:
+    st.chat_message(msg["role"]).write(msg["content"])
 
-# Function to call OpenAI's API and get a response based on the user's query and CSV data
-def get_openai_answer(question, data):
-    context = f"Here is the healthcare data:\n\n{data}\n\nAnswer the question: {question}"
+# Process the user input
+if prompt := st.chat_input():
+    if not openai_api_key:
+        st.info("Please add your OpenAI API key to continue.")
+        st.stop()
+
+    # Set the OpenAI API key
+    openai.api_key = openai_api_key
     
+    # Add the user's message to the session state
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.chat_message("user").write(prompt)
+    
+    # Request a completion from OpenAI's GPT-3.5 or GPT-4
     try:
-        # Use the completions endpoint with the new method
         response = openai.Completion.create(
-            model="gpt-4",  # Use the correct model, e.g., "gpt-4" or another version
-            prompt=context,
+            model="gpt-3.5-turbo",  # Or use another model, e.g., "gpt-4"
+            prompt=[msg["content"] for msg in st.session_state.messages],
             max_tokens=150,
             temperature=0.7
         )
-        return response.choices[0].text.strip()
-    
-    except Exception as e:  # General exception handling
-        st.error(f"Error: {str(e)}")  # Log the error message for troubleshooting
-        return f"Error: {str(e)}"
+        
+        # Get the response message
+        msg = response.choices[0].text.strip()
+        st.session_state.messages.append({"role": "assistant", "content": msg})
+        st.chat_message("assistant").write(msg)
 
-# Displaying the answer when a user submits a question
-if user_question:
-    # Convert dataframe to string
-    data_str = df.to_string(index=False)
-    
-    # Get the response from OpenAI
-    answer = get_openai_answer(user_question, data_str)
-    
-    # Display the result
-    st.write(f"Answer: {answer}")
+    except openai.error.OpenAIError as e:
+        st.error(f"Error: {str(e)}")
