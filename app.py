@@ -6,7 +6,7 @@ import openai
 df = pd.read_csv("healthcare_data.csv")
 
 # Set your OpenAI API key
-openai.api_key = st.secrets["api_key"]
+openai.api_key = st.secrets["OpenAIKey"]
 
 # Streamlit app title
 st.title("Healthcare Facility Data Query")
