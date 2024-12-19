@@ -1,41 +1,39 @@
-# app.py
 import streamlit as st
 from model import get_openai_response
 
 # Streamlit app layout
-st.title("ChatGPT-like clone")
+st.title("ChatGPT-like Clone")
 
-# Initialize session state for messages and model
+# Initialize session state
 if "openai_model" not in st.session_state:
-    st.session_state["openai_model"] = "gpt-3.5-turbo"  # Default model
+    st.session_state["openai_model"] = "gpt-3.5-turbo"
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display the conversation so far
+# Display previous messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Handle user input and API response
+# Input for user prompt
 if prompt := st.chat_input("What is up?"):
     # Append user's message to session state
     st.session_state.messages.append({"role": "user", "content": prompt})
-    
-    # Display user's message
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Get assistant's response by calling the OpenAI model via model.py
-    response_stream = get_openai_response(st.session_state.messages, model=st.session_state["openai_model"])
+    # Generate and display assistant's response
+    with st.chat_message("assistant"):
+        response_container = st.empty()  # For dynamic updates
+        response = ""
 
-    # Process the response from the model and display
-    if response_stream:
-        response_content = ""
-        for chunk in response_stream:
-            if chunk.get("choices"):
-                content = chunk["choices"][0].get("delta", {}).get("content", "")
-                response_content += content
-                st.write(content)  # Display the response as it streams
-        # Once streaming is done, append the full response to messages
-        st.session_state.messages.append({"role": "assistant", "content": response_content})
+        # Get the OpenAI response as a stream
+        for chunk in get_openai_response(st.session_state["openai_model"], st.session_state.messages):
+            if chunk.choices and chunk.choices[0].delta:
+                content = chunk.choices[0].delta.get("content", "")
+                response += content
+                response_container.markdown(response)  # Dynamically update response
+        
+        # Save the full response to session state
+        st.session_state.messages.append({"role": "assistant", "content": response})
