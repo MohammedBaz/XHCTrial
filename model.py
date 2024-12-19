@@ -20,6 +20,7 @@ prompt = [
 ]
 
 
+
 def extract_answer(response_text):
     # Assuming the answer is the last line of the response
     return response_text.strip().split("\n")[-1]
