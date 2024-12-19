@@ -18,14 +18,17 @@ user_question = st.text_input("Ask a question about the healthcare data:")
 def get_openai_answer(question, data):
     context = f"Here is the healthcare data:\n\n{data}\n\nAnswer the question: {question}"
     
-    # Use the updated API method for the new version
-    response = openai.completions.create(
-        model="gpt-4o-mini",  # or gpt-4 if available
-        prompt=context,
-        max_tokens=150,
-        temperature=0.7
-    )
-    return response['choices'][0]['text'].strip()
+    # Use ChatCompletion with correct method for GPT models
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4o-mini",  # Use the correct model
+            messages=[{"role": "user", "content": context}],
+            max_tokens=150,
+            temperature=0.7
+        )
+        return response['choices'][0]['message']['content'].strip()
+    except openai.error.OpenAIError as e:
+        return f"Error: {e}"
 
 # Displaying the answer when a user submits a question
 if user_question:
